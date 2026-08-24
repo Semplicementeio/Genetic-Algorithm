@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If this software materially contributes to an academic or scientific work, the work must provide appropriate bibliographic attribution as required by the license."
+title: "Genetic-Algorithm"
+abstract: "A type-safe, extensible genetic algorithm library for Go, designed for reproducible experimentation, parallel fitness evaluation, and optimization research."
+authors:
+  - name: "Semplicementeio"
+    website: "https://semplicemente.io/"
+url: "https://semplicemente.io/"
+repository-code: "https://github.com/Semplicementeio/Genetic-Algorithm"
+license: "Genetic-Algorithm Custom Software License v1.0"
+version: 0.2.0
+date-released: "2026-08-24"
+keywords:
+  - genetic-algorithm
+  - evolutionary-computation
+  - go
+  - golang
+  - parallel-computing
+  - island-model
+  - optimization
