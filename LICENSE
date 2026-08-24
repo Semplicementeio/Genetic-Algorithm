@@ -1,0 +1,41 @@
+Genetic-Algorithm Custom Software License v1.0
+
+Copyright (c) 2026 Semplicementeio
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+1. COPYRIGHT NOTICE: The above copyright notice and this permission notice 
+   shall be included in all copies or substantial portions of the Software.
+
+2. ACADEMIC AND SCIENTIFIC ATTRIBUTION REQUIREMENT:
+   If the Software materially contributes to an academic or scientific work 
+   that is published or otherwise made publicly available—including but not 
+   limited to scientific papers, journal articles, conference proceedings, 
+   university theses, dissertations, preprints, research reports, or other 
+   public academic or scientific works—the authors of that work MUST provide 
+   appropriate bibliographic attribution to the Software and its original 
+   author, Semplicementeio.
+
+   Such attribution must include a formal bibliographic reference to the 
+   Software, adhering to the metadata provided in the accompanying CITATION.cff 
+   file (or equivalent standard bibliographic citation citing the Author, 
+   Software Title, Version, and Repository URL).
+
+3. BREACH:
+   Failure to comply with the Academic and Scientific Attribution 
+   Requirement constitutes a breach of this License. Rights granted 
+   under this License are subject to compliance with all applicable 
+   terms and conditions.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
