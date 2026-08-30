@@ -394,7 +394,7 @@ Evaluating the effect of multi-island sub-populations on the Rastrigin 5D multi-
 - [x] Statistical algorithm benchmarks (GA vs SA vs Random Search & Island Model GA)
 - [ ] Multi-island topology benchmark suite (Ring vs Fully-Connected)
 - [ ] Dynamic adaptive mutation & diversity control
-- [ ] v1.0.0 API stabilization
+- [ ] API stabilization
 
 ---
 
