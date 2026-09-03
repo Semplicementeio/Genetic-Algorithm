@@ -1,4 +1,4 @@
-# 🧬 genetic
+# 🧬 Genetic Algorithm
 
 **A type-safe, extensible genetic algorithm library for Go**  
 *Designed for reproducible experimentation, parallel fitness evaluation, and optimization research.*
