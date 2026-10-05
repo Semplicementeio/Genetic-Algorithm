@@ -41,7 +41,7 @@
 
 ## 🤔 Why `genetic`?
 
-Many real-world optimization problems—such as resource scheduling, route planning, knapsack item selection, and continuous function optimization—involve search spaces that are **non-convex**, **non-differentiable**, or **combinatorially complex** ($NP$-hard).
+Many real-world optimization problems: such as resource scheduling, route planning, knapsack item selection, and continuous function optimization—involve search spaces that are **non-convex**, **non-differentiable**, or **combinatorially complex** ($NP$-hard).
 
 `genetic` is built for evolutionary optimization in Go. Key design goals:
 
