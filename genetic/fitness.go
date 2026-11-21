@@ -1,10 +1,16 @@
 package genetic
 
 import (
-	"sync"
+	"context"
+	"fmt"
+	"math"
 )
 
-// Evaluator manages fitness calculations for a population, supporting parallel worker pools.
+// maxEvalGrain bounds how many individuals a worker claims at once. Small enough
+// to balance uneven fitness costs, large enough to amortize the atomic counter.
+const maxEvalGrain = 64
+
+// Evaluator manages fitness calculations for a population, supporting parallel workers.
 type Evaluator[T any] struct {
 	fitnessFunc FitnessFunc[T]
 	numWorkers  int
@@ -22,77 +28,40 @@ func NewEvaluator[T any](fn FitnessFunc[T], numWorkers int) *Evaluator[T] {
 }
 
 // Evaluate calculates fitness for all unevaluated individuals in the population.
-func (e *Evaluator[T]) Evaluate(pop Population[T]) {
-	if e.numWorkers <= 1 {
-		e.evaluateSequential(pop)
-	} else {
-		e.evaluateParallel(pop)
-	}
+// It is equivalent to EvaluateContext with context.Background().
+func (e *Evaluator[T]) Evaluate(pop Population[T]) error {
+	return e.EvaluateContext(context.Background(), pop)
 }
 
-func (e *Evaluator[T]) evaluateSequential(pop Population[T]) {
+// EvaluateContext calculates fitness for all unevaluated individuals, running up
+// to NumWorkers fitness calls concurrently. A panic inside the fitness function is
+// recovered and returned as an error wrapping ErrPanicRecovered; a NaN result is
+// returned as ErrNaNFitness; cancellation returns ctx.Err(). Individuals that were
+// not evaluated because of an error keep Evaluated == false.
+func (e *Evaluator[T]) EvaluateContext(ctx context.Context, pop Population[T]) error {
+	pending := make([]int, 0, len(pop))
 	for i := range pop {
 		if !pop[i].Evaluated {
-			pop[i].Fitness = e.fitnessFunc(pop[i].Genome)
-			pop[i].Evaluated = true
+			pending = append(pending, i)
 		}
 	}
-}
-
-func (e *Evaluator[T]) evaluateParallel(pop Population[T]) {
-	type job struct {
-		index  int
-		genome T
-	}
-	type result struct {
-		index   int
-		fitness float64
+	if len(pending) == 0 {
+		return nil
 	}
 
-	unevaluatedCount := 0
-	for i := range pop {
-		if !pop[i].Evaluated {
-			unevaluatedCount++
+	grain := len(pending) / (e.numWorkers * 8)
+	if grain > maxEvalGrain {
+		grain = maxEvalGrain
+	}
+
+	return runParallel(ctx, len(pending), e.numWorkers, grain, func(k int) error {
+		ind := &pop[pending[k]]
+		fit := e.fitnessFunc(ind.Genome)
+		if math.IsNaN(fit) {
+			return fmt.Errorf("%w (individual %d)", ErrNaNFitness, pending[k])
 		}
-	}
-
-	if unevaluatedCount == 0 {
-		return
-	}
-
-	jobs := make(chan job, unevaluatedCount)
-	results := make(chan result, unevaluatedCount)
-
-	workers := e.numWorkers
-	if workers > unevaluatedCount {
-		workers = unevaluatedCount
-	}
-
-	var wg sync.WaitGroup
-	wg.Add(workers)
-
-	for w := 0; w < workers; w++ {
-		go func() {
-			defer wg.Done()
-			for j := range jobs {
-				fit := e.fitnessFunc(j.genome)
-				results <- result{index: j.index, fitness: fit}
-			}
-		}()
-	}
-
-	for i := range pop {
-		if !pop[i].Evaluated {
-			jobs <- job{index: i, genome: pop[i].Genome}
-		}
-	}
-	close(jobs)
-
-	wg.Wait()
-	close(results)
-
-	for res := range results {
-		pop[res.index].Fitness = res.fitness
-		pop[res.index].Evaluated = true
-	}
+		ind.Fitness = fit
+		ind.Evaluated = true
+		return nil
+	})
 }

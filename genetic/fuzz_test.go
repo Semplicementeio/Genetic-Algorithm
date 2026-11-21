@@ -51,7 +51,35 @@ func FuzzEngineConfig(f *testing.F) {
 			t.Fatalf("unexpected error creating engine: %v", err)
 		}
 
-		// Run engine and ensure no panic or deadlock occurs
-		_, _ = engine.Run()
+		// Keep fuzz executions cheap: only run bounded, valid configurations.
+		if popSize > 200 || gens > 30 || workers > 16 {
+			return
+		}
+
+		res, err := engine.Run()
+		if err != nil {
+			t.Fatalf("unexpected run error: %v", err)
+		}
+
+		// Invariants that must hold for every valid configuration.
+		if len(res.FinalPopulation) != popSize {
+			t.Fatalf("final population size %d, want %d", len(res.FinalPopulation), popSize)
+		}
+		if res.GenerationsEvaluated != len(res.History) || res.GenerationsEvaluated < 1 || res.GenerationsEvaluated > gens {
+			t.Fatalf("inconsistent generation count %d (history %d, max %d)", res.GenerationsEvaluated, len(res.History), gens)
+		}
+		for _, ind := range res.FinalPopulation {
+			if !ind.Evaluated {
+				t.Fatal("unevaluated individual in final population")
+			}
+			if ind.Fitness > res.BestIndividual.Fitness {
+				t.Fatalf("best individual (%f) is worse than a final individual (%f)", res.BestIndividual.Fitness, ind.Fitness)
+			}
+		}
+		for i := 1; i < len(res.History); i++ {
+			if res.History[i].Generation != res.History[i-1].Generation+1 {
+				t.Fatal("history generations are not consecutive")
+			}
+		}
 	})
 }

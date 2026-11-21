@@ -1,7 +1,7 @@
 cff-version: 1.2.0
 message: "If this software materially contributes to an academic or scientific work, the work must provide appropriate bibliographic attribution as required by the license."
 title: "Genetic-Algorithm"
-abstract: "A type-safe, extensible genetic algorithm library for Go, designed for reproducible experimentation, parallel fitness evaluation, and optimization research."
+abstract: "A Go library that finds good solutions to hard optimization problems (routing, scheduling, parameter tuning) by simulating evolution (genetic algorithms). Reproducible, parallel, with runnable examples."
 authors:
   - name: "Semplicementeio"
     website: "https://semplicemente.io/"

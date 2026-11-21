@@ -78,6 +78,8 @@ func (gm GaussianMutation) Mutate(g []float64, rate float64, rng *rand.Rand) []f
 }
 
 // SwapMutation swaps two random elements in a slice genome.
+// Unlike the per-gene mutators (BitFlip, Byte, Gaussian), rate is the probability
+// of mutating the whole genome once.
 type SwapMutation[T ~[]E, E any] struct{}
 
 func NewSwapMutation[T ~[]E, E any]() SwapMutation[T, E] {
@@ -105,6 +107,8 @@ func (sm SwapMutation[T, E]) Mutate(g T, rate float64, rng *rand.Rand) T {
 }
 
 // InversionMutation inverts a sub-slice in a slice genome.
+// Unlike the per-gene mutators (BitFlip, Byte, Gaussian), rate is the probability
+// of mutating the whole genome once.
 type InversionMutation[T ~[]E, E any] struct{}
 
 func NewInversionMutation[T ~[]E, E any]() InversionMutation[T, E] {

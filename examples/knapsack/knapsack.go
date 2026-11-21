@@ -1,4 +1,5 @@
-package main
+// Package knapsack contains a runnable genetic-algorithm example.
+package knapsack
 
 import (
 	"fmt"
@@ -13,7 +14,8 @@ type Item struct {
 	Value  float64
 }
 
-func main() {
+// Run executes the example using the given PRNG seed.
+func Run(seed int64) {
 	items := []Item{
 		{"Laptop", 2.5, 1200},
 		{"Camera", 1.2, 700},
@@ -43,7 +45,7 @@ func main() {
 		CrossoverRate:  0.8,
 		ElitismCount:   2,
 		NumWorkers:     4,
-		Seed:           42,
+		Seed:           seed,
 		Generator: func(rng *rand.Rand) []bool {
 			genome := make([]bool, len(items))
 			for i := range genome {
@@ -82,7 +84,7 @@ func main() {
 	}
 
 	var totalWeight, totalValue float64
-	fmt.Println("Optimal Item Selection:")
+	fmt.Println("Best Item Selection Found:")
 	for i, selected := range res.BestIndividual.Genome {
 		if selected {
 			fmt.Printf("  [✓] %-15s (Weight: %.1f kg, Value: $%.0f)\n", items[i].Name, items[i].Weight, items[i].Value)

@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        go-version: [ '1.22', '1.23' ]
+        go-version: [ '1.22', 'stable' ]
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -23,8 +23,14 @@ jobs:
           go-version: ${{ matrix.go-version }}
           cache: true
 
-      - name: Verify Module Dependencies
-        run: go mod verify
+      - name: Check Formatting
+        run: |
+          unformatted=$(gofmt -l .)
+          if [ -n "$unformatted" ]; then
+            echo "These files are not gofmt-formatted:"
+            echo "$unformatted"
+            exit 1
+          fi
 
       - name: Go Vet
         run: go vet ./...
@@ -34,11 +40,11 @@ jobs:
           go build ./...
           go build ./examples/...
 
-      - name: Run Unit, Property & Contract Tests with Race Detector
-        run: go test -v -race ./genetic/...
+      - name: Run Unit, Property, Contract & Example Smoke Tests with Race Detector
+        run: go test -race ./...
 
       - name: Run Fuzz Tests
-        run: go test -v -fuzz=FuzzEngine -fuzztime=10s ./genetic
+        run: go test -run='^$' -fuzz=FuzzEngineConfig -fuzztime=10s ./genetic
 
       - name: Run Benchmarks
-        run: go test -v -bench=. -benchmem ./benchmarks
+        run: go test -run='^$' -bench=. -benchtime=1x -benchmem ./benchmarks

@@ -1,4 +1,5 @@
-package main
+// Package tsp contains a runnable genetic-algorithm example.
+package tsp
 
 import (
 	"fmt"
@@ -31,7 +32,8 @@ func totalRouteDistance(route []int, cities []City) float64 {
 	return dist
 }
 
-func main() {
+// Run executes the example using the given PRNG seed.
+func Run(seed int64) {
 	cities := []City{
 		{0, "Rome", 41.9, 12.5},
 		{1, "Milan", 45.4, 9.1},
@@ -69,7 +71,7 @@ func main() {
 		CrossoverRate:  0.85,
 		ElitismCount:   4,
 		NumWorkers:     4,
-		Seed:           42,
+		Seed:           seed,
 		Generator: func(rng *rand.Rand) []int {
 			route := make([]int, numCities)
 			for i := range route {
@@ -111,7 +113,7 @@ func main() {
 	bestRoute := res.BestIndividual.Genome
 	finalDist := totalRouteDistance(bestRoute, cities)
 
-	fmt.Println("Optimal Route Order:")
+	fmt.Println("Best Route Found:")
 	cityNames := make([]string, len(bestRoute))
 	for i, cityID := range bestRoute {
 		cityNames[i] = cities[cityID].Name
@@ -121,7 +123,7 @@ func main() {
 	renderASCIIMap(bestRoute, cities)
 
 	fmt.Println("--------------------------------------------------")
-	fmt.Printf("Total Route Distance: %.2f km\n", finalDist)
+	fmt.Printf("Total Route Length : %.2f (coordinate units)\n", finalDist)
 	fmt.Printf("Generations Evaluated: %d\n", res.GenerationsEvaluated)
 	fmt.Printf("Solver Execution Time: %v\n", res.TotalDuration)
 	fmt.Println("==================================================")

@@ -6,8 +6,11 @@ import (
 	"fmt"
 	"math/rand"
 	"os"
-	"os/exec"
 
+	"github.com/Semplicementeio/Genetic-Algorithm/examples/knapsack"
+	"github.com/Semplicementeio/Genetic-Algorithm/examples/optimization"
+	"github.com/Semplicementeio/Genetic-Algorithm/examples/scheduling"
+	"github.com/Semplicementeio/Genetic-Algorithm/examples/tsp"
 	"github.com/Semplicementeio/Genetic-Algorithm/genetic"
 )
 
@@ -25,13 +28,13 @@ func main() {
 
 	switch *mode {
 	case "knapsack":
-		runCmd("go", "run", "./examples/knapsack")
+		knapsack.Run(*seed)
 	case "tsp":
-		runCmd("go", "run", "./examples/tsp")
+		tsp.Run(*seed)
 	case "optimization":
-		runCmd("go", "run", "./examples/optimization")
+		optimization.Run(*seed)
 	case "scheduling":
-		runCmd("go", "run", "./examples/scheduling")
+		scheduling.Run(*seed)
 	case "all":
 		runQuickShowcase(*seed, *exportCSV)
 	default:
@@ -109,24 +112,18 @@ func runQuickShowcase(seed int64, exportCSV bool) {
 
 	fmt.Println("--- 2. Executing Real-World Domain Problem Examples ---")
 	fmt.Println("Running 0/1 Knapsack problem...")
-	runCmd("go", "run", "./examples/knapsack")
+	knapsack.Run(seed)
+	fmt.Println()
 
 	fmt.Println("Running Traveling Salesman Problem (TSP)...")
-	runCmd("go", "run", "./examples/tsp")
+	tsp.Run(seed)
+	fmt.Println()
 
 	fmt.Println("Running Mathematical Function Benchmark & Algorithm Comparison...")
-	runCmd("go", "run", "./examples/optimization")
+	optimization.Run(seed)
+	fmt.Println()
 
 	fmt.Println("Running Job Shop Task Scheduling...")
-	runCmd("go", "run", "./examples/scheduling")
-}
-
-func runCmd(name string, args ...string) {
-	cmd := exec.Command(name, args...)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	if err := cmd.Run(); err != nil {
-		fmt.Printf("Command failed: %v\n", err)
-	}
+	scheduling.Run(seed)
 	fmt.Println()
 }

@@ -1,4 +1,5 @@
-package main
+// Package scheduling contains a runnable genetic-algorithm example.
+package scheduling
 
 import (
 	"fmt"
@@ -13,7 +14,8 @@ type Task struct {
 	Duration int
 }
 
-func main() {
+// Run executes the example using the given PRNG seed.
+func Run(seed int64) {
 	tasks := []Task{
 		{0, "Database Migration", 45},
 		{1, "Index Rebuild", 30},
@@ -41,7 +43,7 @@ func main() {
 		CrossoverRate:  0.80,
 		ElitismCount:   2,
 		NumWorkers:     4,
-		Seed:           42,
+		Seed:           seed,
 		Generator: func(rng *rand.Rand) []int {
 			schedule := make([]int, len(tasks))
 			for i := range schedule {
@@ -99,7 +101,7 @@ func main() {
 		machineTasks[machineID] = append(machineTasks[machineID], t)
 	}
 
-	fmt.Println("Optimal Machine Task Assignment:")
+	fmt.Println("Best Machine Task Assignment Found:")
 	maxLoad := 0
 	for m := 0; m < numWorkers; m++ {
 		fmt.Printf(" Machine %d (Total Load: %d mins):\n", m+1, machineLoads[m])
@@ -112,7 +114,7 @@ func main() {
 	}
 
 	fmt.Println("--------------------------------------------------")
-	fmt.Printf("Optimal Makespan (Completion Time): %d minutes\n", maxLoad)
+	fmt.Printf("Makespan (Completion Time): %d minutes\n", maxLoad)
 	fmt.Printf("Generations Evaluated            : %d\n", res.GenerationsEvaluated)
 	fmt.Printf("Execution Time                   : %v\n", res.TotalDuration)
 	fmt.Println("==================================================")

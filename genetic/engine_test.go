@@ -330,5 +330,3 @@ func TestContractInvariants(t *testing.T) {
 		}
 	})
 }
-
-

@@ -40,7 +40,9 @@ func (sp SinglePointCrossover[T, E]) Cross(p1, p2 T, rng *rand.Rand) (T, T) {
 	return c1, c2
 }
 
-// TwoPointCrossover performs two-point crossover on slice genomes.
+// TwoPointCrossover performs two-point crossover on slice genomes. The exchanged
+// segment is the half-open range [pt1, pt2) with 0 <= pt1 < pt2 <= len(genome),
+// so every gene (including the last one) can be exchanged.
 type TwoPointCrossover[T ~[]E, E any] struct{}
 
 func NewTwoPointCrossover[T ~[]E, E any]() TwoPointCrossover[T, E] {
@@ -54,7 +56,7 @@ func (tp TwoPointCrossover[T, E]) Cross(p1, p2 T, rng *rand.Rand) (T, T) {
 	}
 
 	pt1 := rng.Intn(n - 1)
-	pt2 := rng.Intn(n-pt1-1) + pt1 + 1
+	pt2 := rng.Intn(n-pt1) + pt1 + 1
 
 	c1 := make(T, n)
 	c2 := make(T, n)
@@ -104,6 +106,8 @@ func (uc UniformCrossover[T, E]) Cross(p1, p2 T, rng *rand.Rand) (T, T) {
 }
 
 // OrderCrossover (OX1) preserves relative order of elements, ideal for permutation problems like TSP.
+// Both parents must be permutations of the same set of distinct elements; genomes
+// containing duplicate values are not supported and yield undefined children.
 type OrderCrossover[T ~[]E, E comparable] struct{}
 
 func NewOrderCrossover[T ~[]E, E comparable]() OrderCrossover[T, E] {

@@ -1,4 +1,5 @@
-package main
+// Package optimization contains a runnable genetic-algorithm example.
+package optimization
 
 import (
 	"fmt"
@@ -40,7 +41,7 @@ type ExperimentResult struct {
 	AvgDuration  time.Duration
 }
 
-func runGA(dim int, fn func([]float64) float64, trials int) ExperimentResult {
+func runGA(dim int, fn func([]float64) float64, trials int, seed int64) ExperimentResult {
 	evalsPerRun := 100 * 100 // 10,000 evaluations
 	bestValues := make([]float64, trials)
 	var totalDuration time.Duration
@@ -54,7 +55,7 @@ func runGA(dim int, fn func([]float64) float64, trials int) ExperimentResult {
 			CrossoverRate:  0.8,
 			ElitismCount:   2,
 			NumWorkers:     4,
-			Seed:           int64(42 + r),
+			Seed:           seed + int64(r),
 			Generator: func(rng *rand.Rand) []float64 {
 				g := make([]float64, dim)
 				for i := range g {
@@ -93,7 +94,7 @@ func runGA(dim int, fn func([]float64) float64, trials int) ExperimentResult {
 	}
 }
 
-func runSimulatedAnnealing(dim int, fn func([]float64) float64, trials int) ExperimentResult {
+func runSimulatedAnnealing(dim int, fn func([]float64) float64, trials int, seed int64) ExperimentResult {
 	evals := 10000
 	bestValues := make([]float64, trials)
 	var totalDuration time.Duration
@@ -101,7 +102,7 @@ func runSimulatedAnnealing(dim int, fn func([]float64) float64, trials int) Expe
 
 	for r := 0; r < trials; r++ {
 		start := time.Now()
-		rng := rand.New(rand.NewSource(int64(42 + r)))
+		rng := rand.New(rand.NewSource(seed + int64(r)))
 
 		current := make([]float64, dim)
 		for i := range current {
@@ -157,7 +158,7 @@ func runSimulatedAnnealing(dim int, fn func([]float64) float64, trials int) Expe
 	}
 }
 
-func runRandomSearch(dim int, fn func([]float64) float64, trials int) ExperimentResult {
+func runRandomSearch(dim int, fn func([]float64) float64, trials int, seed int64) ExperimentResult {
 	evals := 10000
 	bestValues := make([]float64, trials)
 	var totalDuration time.Duration
@@ -165,7 +166,7 @@ func runRandomSearch(dim int, fn func([]float64) float64, trials int) Experiment
 
 	for r := 0; r < trials; r++ {
 		start := time.Now()
-		rng := rand.New(rand.NewSource(int64(42 + r)))
+		rng := rand.New(rand.NewSource(seed + int64(r)))
 
 		bestEnergy := math.MaxFloat64
 		for step := 0; step < evals; step++ {
@@ -218,7 +219,7 @@ func computeStats(values []float64) (mean, stdDev, minVal float64) {
 	return mean, stdDev, minVal
 }
 
-func runIslandGA(dim int, numIslands int, fn func([]float64) float64, trials int) ExperimentResult {
+func runIslandGA(dim int, numIslands int, fn func([]float64) float64, trials int, seed int64) ExperimentResult {
 	evalsPerRun := 100 * 100
 	bestValues := make([]float64, trials)
 	var totalDuration time.Duration
@@ -232,7 +233,7 @@ func runIslandGA(dim int, numIslands int, fn func([]float64) float64, trials int
 			CrossoverRate:  0.8,
 			ElitismCount:   1,
 			NumWorkers:     2,
-			Seed:           int64(42 + r),
+			Seed:           seed + int64(r),
 			Generator: func(rng *rand.Rand) []float64 {
 				g := make([]float64, dim)
 				for i := range g {
@@ -281,14 +282,15 @@ func runIslandGA(dim int, numIslands int, fn func([]float64) float64, trials int
 	}
 }
 
-func main() {
+// Run executes the benchmark; trial r uses seed+r.
+func Run(seed int64) {
 	dim := 5
 	trials := 30
 
 	fmt.Println("==========================================================================================")
 	fmt.Println("  🧬 Empirical Algorithm Benchmark: GA vs SA vs Random Search & Island Model GA")
 	fmt.Println("==========================================================================================")
-	fmt.Printf("Experimental Methodology: Dimension d=%d, Bounds [-5.12, 5.12], %d Independent Trials (Seeds 42-71)\n", dim, trials)
+	fmt.Printf("Experimental Methodology: Dimension d=%d, Bounds [-5.12, 5.12], %d Independent Trials (Seeds %d-%d)\n", dim, trials, seed, seed+int64(trials)-1)
 	fmt.Printf("Budget: 10,000 Evaluations / Run | Success Threshold: Minimum < 0.10\n\n")
 
 	benchmarks := []struct {
@@ -301,9 +303,9 @@ func main() {
 
 	for _, bm := range benchmarks {
 		fmt.Printf("### Benchmark: %s\n", bm.Name)
-		ga := runGA(dim, bm.Fn, trials)
-		sa := runSimulatedAnnealing(dim, bm.Fn, trials)
-		rs := runRandomSearch(dim, bm.Fn, trials)
+		ga := runGA(dim, bm.Fn, trials, seed)
+		sa := runSimulatedAnnealing(dim, bm.Fn, trials, seed)
+		rs := runRandomSearch(dim, bm.Fn, trials, seed)
 
 		fmt.Println("| Algorithm               | Mean ± StdDev        | Best Min Found | Success Rate (<0.1) | Time (ms) |")
 		fmt.Println("|-------------------------|----------------------|----------------|---------------------|-----------|")
@@ -320,9 +322,9 @@ func main() {
 	}
 
 	fmt.Printf("### Island Model Evaluation: Single Pop vs 4 Islands vs 8 Islands (Rastrigin 5D)\n")
-	singlePop := runGA(dim, rastrigin, trials)
-	island4 := runIslandGA(dim, 4, rastrigin, trials)
-	island8 := runIslandGA(dim, 8, rastrigin, trials)
+	singlePop := runGA(dim, rastrigin, trials, seed)
+	island4 := runIslandGA(dim, 4, rastrigin, trials, seed)
+	island8 := runIslandGA(dim, 8, rastrigin, trials, seed)
 
 	fmt.Println("| Architecture            | Mean ± StdDev        | Best Min Found | Success Rate (<0.1) | Time (ms) |")
 	fmt.Println("|-------------------------|----------------------|----------------|---------------------|-----------|")
@@ -344,4 +346,3 @@ func main() {
 	fmt.Println("  • SA trajectory search easily gets trapped in local minimum basins without crossover restarts.")
 	fmt.Println("==========================================================================================")
 }
-
